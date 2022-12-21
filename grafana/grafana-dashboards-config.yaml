@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: monitoring
+data:
+  app.dashboard.yaml: |-
+    - name: 'app.default.json'
+      org_id: 1     
+      folder: ''   
+      type: 'file'
+      options:
+        folder: '/var/lib/grafana/dashboards'
+  kubernetes.dashboard.yaml: |-
+    - name: 'kubernetes.default.json'
+      org_id: 1     
+      folder: ''
+      type: 'file'
+      options:
+        folder: '/var/lib/grafana/dashboards'
