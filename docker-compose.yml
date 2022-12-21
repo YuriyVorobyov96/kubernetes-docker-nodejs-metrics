@@ -1,0 +1,50 @@
+version: "3"
+services:
+  app:
+    build: .
+    links:
+      - postgres
+    ports:
+      - 3000:3000
+    environment:
+      - PORT=${PORT}
+    command: npm run start
+
+  postgres:
+    image: postgres:11.5
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - 5432:5432
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus/docker/prometheus.yaml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/docker/provisioning:/etc/grafana/provisioning
+      - ./grafana/docker/config.ini:/etc/grafana/config.ini
+      - ./grafana/docker/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    ports:
+      - 8080:3000
+
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
